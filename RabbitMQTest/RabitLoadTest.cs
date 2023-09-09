@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.Metrics;
+using System.Text;
 using RabbitMQ.Client;
 
 namespace RabbitMQTest
@@ -31,17 +32,18 @@ namespace RabbitMQTest
                 {
                     // Declare a queue
                     channel.QueueDeclare(queue: quename, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
+                    int counter = 0;
                     // Create a message
                     while (!Console.KeyAvailable)
                     {
+                        Interlocked.Increment(ref counter);
                         var id_key = Guid.NewGuid().ToString();
                         string message = $"Hello, RabbitMQ!_{id_key}";
                         var body = Encoding.UTF8.GetBytes(message);
 
                         // Publish the message to the queue
                         channel.BasicPublish(exchange: "", routingKey: quename, basicProperties: null, body: body);
-                        if (worker <= 10)
+                        if (counter % 1000==0)
                             Console.WriteLine("Message sent: {0} queueName : {1}", message, quename);
                     }
                 }

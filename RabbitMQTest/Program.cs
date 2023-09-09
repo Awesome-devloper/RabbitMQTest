@@ -18,11 +18,11 @@ public class Program
         var Password = Console.ReadLine();
         Console.WriteLine("Please Enter Number Of Queue?");
         var numberOfQueue = Console.ReadLine();
-        Console.WriteLine("Please Enter App Run Mode ,Prosedure:1,CunsumerMode:2 ,Both:3?");
+        Console.WriteLine("Please Enter App Run Mode ,Producer:1,ConsumerMode:2 ,Both:3?");
         string Mode = Console.ReadLine();
         Mode = string.IsNullOrWhiteSpace(Mode) ? "3" : Mode;
         var queu = "Abed_Queues";
-        Console.WriteLine("Please Enter Numberof Worker");
+        Console.WriteLine("Please Enter Number of Worker");
         string Worker = Console.ReadLine();
         int worker = string.IsNullOrWhiteSpace(Worker) ? 8 : Convert.ToInt32( Worker);
         // Create a connection factory

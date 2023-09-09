@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
 using System.Collections;
+using System.Diagnostics.Metrics;
 
 namespace RabbitMQTest
 {
@@ -18,7 +19,7 @@ namespace RabbitMQTest
         }
 
 
-        public async Task main( string queue,int number,int worker)
+        public async Task main(string queue, int number, int worker)
         {
             List<int> keys = Enumerable.Range(1, number).ToList();
             await Parallel.ForEachAsync(keys, new ParallelOptions() { MaxDegreeOfParallelism = worker },
@@ -30,22 +31,23 @@ namespace RabbitMQTest
 
         }
 
-        private async ValueTask Cousomers(string queue,int worker)
+        private async ValueTask Cousomers(string queue, int worker)
         {
             using (var connection = factory.CreateConnection())
             {
                 using (var channel = connection.CreateModel())
                 {
 
-                    
+                    int counter = 0;
                     channel.QueueDeclare(queue: queue, durable: false, exclusive: false, autoDelete: false, arguments: null);
                     while (!Console.KeyAvailable)
                     {
+                        Interlocked.Increment(ref counter);
                         var consumer1 = new EventingBasicConsumer(channel);
                         consumer1.Received += (model, ea) =>
                         {
                             var message = Encoding.UTF8.GetString(ea.Body.ToArray());
-                            if (worker <= 10)
+                            if (counter % 1000 == 0)
                                 Console.WriteLine("Queue 1 - Message received: {0}", message);
                         };
 
